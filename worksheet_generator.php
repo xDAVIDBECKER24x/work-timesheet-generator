@@ -4,9 +4,9 @@ $start_work_time = "9:00";
 $start_lunch_time = "11:00";
 $hours_per_day = 8;
 $hours_per_lunch = 1;
-$employeer_name = "David_Ricardo";
+$employeer_name = "David_Carollo";
 
-$data_month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+//Create arrays to associate
 $data_week = ["Mon" => 0, "Tue" => 1, "Wed" => 2, "Thu" => 3, "Fri" => 4, "Sat" => 5, "Sun" => 6];
 $data_week_name = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 $data_week_number = [0, 1, 2, 3, 4,  5, 6];
@@ -15,10 +15,8 @@ $data_week_number = [0, 1, 2, 3, 4,  5, 6];
 $current_year = date('Y', strtotime('Y'));
 $current_month = date('m', strtotime('m'));
 $days_month_count = cal_days_in_month(CAL_GREGORIAN, $current_month, $current_year);
-// echo $current_year .PHP_EOL;
-// echo $current_month .PHP_EOL;
-// echo $days_month_count . PHP_EOL;
 
+//Get firs day of current month
 $current_date = mktime(0, 0, 0, $current_month, 1, $current_year);
 $date = date(DATE_RFC1123, mktime(0, 0, 0, $current_month, 1, $current_year));
 $date = trim(str_replace(",", "", $date));
@@ -27,7 +25,7 @@ echo $date . PHP_EOL;
 
 $data_date = explode(' ', $date);
 
-$file = "Planilha_Horas_" . $employeer_name . "_" . $data_date[2] . "_" . $data_date[3] . ".csv";
+$file = "Work_Timesheet_" . $employeer_name . "_" . $data_date[2] . "_" . $data_date[3] . ".csv";
 $fl = fopen($file, 'w')  or die("Can't access file " . $file);
 
 var_dump($data_date);
@@ -39,14 +37,12 @@ $day_week = $data_date[0];
 $idx_day_week = intval($data_week[$day_week]);
 $day_worked = 0;
 
-fwrite($fl, "Dia,Entrada,Saída Almoço,Entrada Almoço,Saída,Total Trabalhado" . PHP_EOL);
+fwrite($fl, "Day,Start Work,Lunch Time,End Lunch,End Work,Total Hours" . PHP_EOL);
 
-
-
+//Loop trough days in current month skipping weekend days
 for ($i = 0; $i < $days_month_count; $i++) {
     $generated_work_time = generate_time($start_work_time, $hours_per_day + $hours_per_lunch);
     $generated_lunch_time = generate_time($start_lunch_time, $hours_per_lunch);
-    var_dump($generated_lunch_time);
     if ($idx_day_week > 4) {
         if ($idx_day_week > 5) {
             echo "Day : " . ($i + 1) . "- Week Day :" . $data_week_name[$idx_day_week] . " - " . $idx_day_week .  PHP_EOL;
@@ -70,13 +66,11 @@ echo "Days Worked : " . $day_worked . PHP_EOL;
 fwrite($fl, "Total: ,,,,," . ($day_worked * 8) . PHP_EOL);
 fclose($fl);
 
+//Fucntion to generate random times betwwen range
 function generate_time($time, $range)
 {
-    // $time = intval(str_replace(":", "", $time));
     $limiter = strpos($time, ":");
-
     $hour_time_start = intval(substr($time, 0, $limiter + 1));
-    echo $hour_time_start;
     $minutes_time_start = intval(substr($time, $limiter + 1, 2));
 
     $rnd =  random_int($minutes_time_start, $minutes_time_start + 20);
